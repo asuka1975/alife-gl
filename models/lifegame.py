@@ -17,8 +17,9 @@ layout (location = 0) out vec4 vertexColor;
 uniform ivec2 rect;
 
 void main() {
-    float x = mod(gl_VertexID, rect.x) / rect.x;
-    float y = float(gl_VertexID) / rect.x / rect.y;
+    float fid = gl_VertexID;
+    float x = mod(fid, rect.x) / rect.x;
+    float y = int(fid / rect.x) / float(rect.y);
 
     gl_Position = vec4(vec2(x, y) * 2 - 1, 0, 1);
     vertexColor = vec4(cell[gl_VertexID]);
@@ -135,7 +136,7 @@ void main() {
 """
 
     def __init__(self) -> None:
-        self.rect = (1000, 1000)
+        self.rect = (100, 100)
 
     def setup(self, resolution: tuple[int, int]) -> None:
         self.program = shader.Shader()
