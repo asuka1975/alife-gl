@@ -11,7 +11,7 @@ def main():
         return
 
     resolution = (1000, 1000)
-    window = glfw.create_window(*resolution, 'lifegame', None, None)
+    window = glfw.create_window(*resolution, 'simulation', None, None)
     if not window:
         glfw.terminate()
         print("failed to create window")
@@ -22,10 +22,10 @@ def main():
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 5)
 
-    model: models.Model = models.Lifegame()
+    model: models.Model = models.GrayScott()
     model.setup(resolution)
 
-    fps = 30
+    fps = 60
     glfw.set_time(0)
     current = glfw.get_time()
     previous = glfw.get_time()
