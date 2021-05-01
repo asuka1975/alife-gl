@@ -22,10 +22,10 @@ def main():
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 5)
 
-    model: models.Model = models.GrayScott()
+    model: models.Model = models.Lifegame()
     model.setup(resolution)
 
-    fps = 60
+    fps = 30
     glfw.set_time(0)
     current = glfw.get_time()
     previous = glfw.get_time()
