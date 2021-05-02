@@ -23,7 +23,7 @@ def main():
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 5)
 
     model: models.Model = models.Boids()
-    model.setup(resolution)
+    model.setup(window)
 
     fps = 30
     glfw.set_time(0)
