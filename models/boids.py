@@ -3,6 +3,7 @@ import typing as tp
 import numpy as np
 
 from OpenGL.GL import *
+import glfw
 
 from . import shader
 
@@ -110,11 +111,11 @@ const float fc = 0.005;
 const float fs = 0.5;
 const float fa = 0.01;
 const float fb = 0.04;
-const float fw = 0.3;
+const float fw = 2.8;
 const float dc = 0.8;
 const float ds = 0.03;
 const float da = 0.5;
-const float dw = 0.2;
+const float dw = 0.5;
 const float ac = pi / 2;
 const float as = pi / 2;
 const float aa = pi / 3;
@@ -145,7 +146,9 @@ void main() {
     float dist_center = length(agent[id].position);
     vec2 f_b = dist_center > 1 ? -agent[id].position * (dist_center - 1) / dist_center * fb : vec2(0);
 
-    temp[id].velocity = agent[id].velocity + f_c + f_s + f_a + f_b;
+    vec2 f_w = length(agent[id].position - mouse_position) < dw ? (agent[id].position - mouse_position) * fw : vec2(0);
+
+    temp[id].velocity = agent[id].velocity + f_c + f_s + f_a + f_b + f_w;
     float lv = length(temp[id].velocity);
     vec2 vdirection = normalize(temp[id].velocity);
     temp[id].velocity = lv < min_velocity ? vdirection * min_velocity : (lv > max_velocity ? vdirection * max_velocity : temp[id].velocity);
@@ -182,17 +185,19 @@ void main() {
 """
 
     def __init__(self) -> None:
-        self.num_agents = 1000
+        self.num_agents = 100
 
     def setup(self, window: tp.Any) -> None:
+        min_velocity = 0.005
+        max_velocity = 0.03
+        self.window_size = glfw.get_window_size(window)
+        self.clicked = False
+
         self.program = shader.Shader()
         self.program.attach_shader(self.vert, GL_VERTEX_SHADER)
         self.program.attach_shader(self.geom, GL_GEOMETRY_SHADER)
         self.program.attach_shader(self.frag, GL_FRAGMENT_SHADER)
         self.program.link()
-
-        min_velocity = 0.005
-        max_velocity = 0.03
 
         agents = np.random.rand(self.num_agents, 2, 2).astype(np.float32) * 2.0 - 1.0
         agents[:, 1, :] = (np.random.rand(self.num_agents, 2).astype(np.float32) * (max_velocity - min_velocity) + min_velocity) * np.random.choice([1, -1], (self.num_agents, 2))
@@ -215,6 +220,9 @@ void main() {
         glUniform1i(glGetUniformLocation(self.compute.handle, "num_agents"), self.num_agents)
         glUniform1f(glGetUniformLocation(self.compute.handle, "min_velocity"), min_velocity)
         glUniform1f(glGetUniformLocation(self.compute.handle, "max_velocity"), max_velocity)
+        self.mouse_position_loc = glGetUniformLocation(self.compute.handle, "mouse_position")
+        glUniform2f(self.mouse_position_loc, 500, 500)
+        
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo[0])
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo[1])
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)
@@ -226,6 +234,9 @@ void main() {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)
         self.memory_copy.unuse()
 
+        glfw.set_cursor_pos_callback(window, self.mouse_pos)
+        glfw.set_mouse_button_callback(window, self.mouse_click)
+
     def render(self) -> None:
         self.compute.use()
         glDispatchCompute(32, 1, 1)
@@ -235,4 +246,24 @@ void main() {
         self.program.use()
         glDrawArrays(GL_POINTS, 0, self.num_agents)
         self.program.unuse()
+
+    def mouse_pos(self, window, xpos, ypos):
+        x = float(xpos) / self.window_size[0]
+        y = float(ypos) / self.window_size[1]
+        x = x * 2. - 1.
+        y = y * 2. - 1.
+        y = -y
+        self.compute.use()
+        if self.clicked:
+            glUniform2f(self.mouse_position_loc, x, y)
+        else:
+            glUniform2f(self.mouse_position_loc, 500, 500)
+        self.compute.unuse()
+
+    def mouse_click(self, window, button, action, mods):
+        if button == glfw.MOUSE_BUTTON_LEFT:
+            if action == glfw.PRESS:
+                self.clicked = True
+            else:
+                self.clicked = False
 
