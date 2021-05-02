@@ -48,3 +48,7 @@ $ python main.py
 You can see like the image below.
 
 ![](./images/lifegame.png)
+
+# License
+
+ See the [LICENSE](LICENSE) file for licensing information.
