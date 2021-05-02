@@ -22,7 +22,7 @@ def main():
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 5)
 
-    model: models.Model = models.CellMove()
+    model: models.Model = models.Boids()
     model.setup(window)
 
     fps = 30
