@@ -1,6 +1,6 @@
 # alife-gl
 
-Alife-gl provides some multi-agent models accelerated by GPGPU. The models include CellMove, Lifegame, Gray=Scott and Boids.
+Alife-gl provides some multi-agent models accelerated by GPGPU. The available models include CellMove, Lifegame, Gray=Scott and Boids.
 
 ## Getting Started
 
@@ -44,3 +44,7 @@ At a commandline, enter the following command.
 ```
 $ python main.py
 ```
+
+You can see like the image below.
+
+![](./images/lifegame.png)
