@@ -1,3 +1,5 @@
+import typing as tp
+
 import numpy as np
 
 from OpenGL.GL import *
@@ -138,7 +140,7 @@ void main() {
     def __init__(self) -> None:
         self.rect = (100, 100)
 
-    def setup(self, resolution: tuple[int, int]) -> None:
+    def setup(self, window: tp.Any) -> None:
         self.program = shader.Shader()
         self.program.attach_shader(self.vert, GL_VERTEX_SHADER)
         self.program.attach_shader(self.geom, GL_GEOMETRY_SHADER)
@@ -147,7 +149,6 @@ void main() {
 
         self.program.use()
         glUniform2i(glGetUniformLocation(self.program.handle, "rect"), *self.rect)
-        glUniform2i(glGetUniformLocation(self.program.handle, "resolution"), *resolution)
         self.program.unuse()
 
         field = np.random.randint(0, 2, self.rect[0] * self.rect[1])

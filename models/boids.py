@@ -1,3 +1,5 @@
+import typing as tp
+
 import numpy as np
 
 from OpenGL.GL import *
@@ -182,7 +184,7 @@ void main() {
     def __init__(self) -> None:
         self.num_agents = 1000
 
-    def setup(self, resolution: tuple[int, int]) -> None:
+    def setup(self, window: tp.Any) -> None:
         self.program = shader.Shader()
         self.program.attach_shader(self.vert, GL_VERTEX_SHADER)
         self.program.attach_shader(self.geom, GL_GEOMETRY_SHADER)
