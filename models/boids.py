@@ -185,7 +185,7 @@ void main() {
 """
 
     def __init__(self) -> None:
-        self.num_agents = 100
+        self.num_agents = 1000
 
     def setup(self, window: tp.Any) -> None:
         min_velocity = 0.005
@@ -256,8 +256,6 @@ void main() {
         self.compute.use()
         if self.clicked:
             glUniform2f(self.mouse_position_loc, x, y)
-        else:
-            glUniform2f(self.mouse_position_loc, 500, 500)
         self.compute.unuse()
 
     def mouse_click(self, window, button, action, mods):
@@ -265,5 +263,8 @@ void main() {
             if action == glfw.PRESS:
                 self.clicked = True
             else:
+                self.compute.use()
+                glUniform2f(self.mouse_position_loc, 500, 500)
+                self.compute.unuse()
                 self.clicked = False
 
