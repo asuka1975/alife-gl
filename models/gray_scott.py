@@ -201,6 +201,12 @@ void main() {
         glBufferData(GL_SHADER_STORAGE_BUFFER, vs.itemsize * vs.shape[0], vs, GL_STATIC_DRAW)
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo[3])
         glBufferData(GL_SHADER_STORAGE_BUFFER, temporary.itemsize * temporary.shape[0], temporary, GL_STATIC_DRAW)
+        
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo[0])
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo[1])
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssbo[2])
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, ssbo[3])
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)
 
         self.compute = shader.Shader()
         self.compute.attach_shader(self.comp, GL_COMPUTE_SHADER)
@@ -212,20 +218,7 @@ void main() {
 
         self.compute.use()
         glUniform2i(glGetUniformLocation(self.compute.handle, "rect"), *self.rect)
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo[0])
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo[1])
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssbo[2])
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, ssbo[3])
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)
         self.compute.unuse()
-
-        self.memory_copy.use()
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo[0])
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo[1])
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssbo[2])
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, ssbo[3])
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)
-        self.memory_copy.unuse()
 
     def render(self) -> None:
         self.compute.use()

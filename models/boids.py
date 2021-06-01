@@ -118,7 +118,7 @@ const float da = 0.5;
 const float dw = 0.5;
 const float ac = pi / 2;
 const float as = pi / 2;
-const float aa = pi / 3;
+const float aa = pi / 2;
 
 
 void main() {
@@ -185,7 +185,7 @@ void main() {
 """
 
     def __init__(self) -> None:
-        self.num_agents = 1000
+        self.num_agents = 500
 
     def setup(self, window: tp.Any) -> None:
         min_velocity = 0.005
@@ -207,6 +207,9 @@ void main() {
         temporary = np.zeros(shape=(self.num_agents, 2, 2), dtype=np.float32)
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo[1])
         glBufferData(GL_SHADER_STORAGE_BUFFER, temporary.itemsize * np.prod(temporary.shape), temporary, GL_STATIC_DRAW)
+        
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo[0])
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo[1])
 
         self.compute = shader.Shader()
         self.compute.attach_shader(self.comp, GL_COMPUTE_SHADER)
@@ -222,17 +225,7 @@ void main() {
         glUniform1f(glGetUniformLocation(self.compute.handle, "max_velocity"), max_velocity)
         self.mouse_position_loc = glGetUniformLocation(self.compute.handle, "mouse_position")
         glUniform2f(self.mouse_position_loc, 500, 500)
-        
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo[0])
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo[1])
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)
         self.compute.unuse()
-
-        self.memory_copy.use()
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo[0])
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo[1])
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)
-        self.memory_copy.unuse()
 
         glfw.set_cursor_pos_callback(window, self.mouse_pos)
         glfw.set_mouse_button_callback(window, self.mouse_click)
